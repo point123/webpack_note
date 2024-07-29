@@ -1,0 +1,8 @@
+{
+    "editor.cursorBlinking": "expand",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorStyle": "line",
+    "workbench.editorAssociations": {
+        "*.md": "default"
+    }
+}
