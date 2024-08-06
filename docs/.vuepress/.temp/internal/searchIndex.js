@@ -11,6 +11,21 @@ export const searchIndex = [
     "headers": [
       {
         "level": 3,
+        "title": "配置",
+        "slug": "配置",
+        "link": "#配置",
+        "children": []
+      }
+    ],
+    "path": "/base/auto-clean.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
         "title": "5大核心概念",
         "slug": "_5大核心概念",
         "link": "#_5大核心概念",
@@ -73,8 +88,45 @@ export const searchIndex = [
   },
   {
     "title": "",
+    "headers": [
+      {
+        "level": 3,
+        "title": "配置",
+        "slug": "配置",
+        "link": "#配置",
+        "children": []
+      }
+    ],
+    "path": "/base/change-output.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
     "headers": [],
     "path": "/base/dev-mode.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
+        "title": "引入字体图标",
+        "slug": "引入字体图标",
+        "link": "#引入字体图标",
+        "children": []
+      },
+      {
+        "level": 3,
+        "title": "配置",
+        "slug": "配置",
+        "link": "#配置",
+        "children": []
+      }
+    ],
+    "path": "/base/process-font-source.html",
     "pathLocale": "/",
     "extraFields": []
   },
@@ -111,6 +163,43 @@ export const searchIndex = [
       }
     ],
     "path": "/base/process-image-source.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
+        "title": "Eslint",
+        "slug": "eslint",
+        "link": "#eslint",
+        "children": []
+      },
+      {
+        "level": 3,
+        "title": "Babel",
+        "slug": "babel",
+        "link": "#babel",
+        "children": []
+      }
+    ],
+    "path": "/base/process-js-source.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
+        "title": "配置",
+        "slug": "配置",
+        "link": "#配置",
+        "children": []
+      }
+    ],
+    "path": "/base/process-other-source.html",
     "pathLocale": "/",
     "extraFields": []
   },

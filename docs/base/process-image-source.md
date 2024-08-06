@@ -57,7 +57,7 @@ module.exports = {
 样式资源经过`style-loader`的处理,被打包到dist目录的主文件中
 
 ### 4.对资源进行优化
-将小于指定大小的资源转换为`dataurl`形式(`base64`)
+将小于指定大小的资源转换为`dataURI`形式(`base64`)
 ```javascript{29-33} title="webpack.config.js"
 const path = require("node:path");
 module.exports = {
@@ -102,7 +102,7 @@ module.exports = {
 * 优点: 减少请求数量
 * 缺点: 资源体积将变大
 
-此时转换为base64的图片不会输出,它将以dataurl形式内置到js中
+此时转换为base64的图片不会输出,它将以dataURI形式内置到js中
 
 ::: tip
 默认情况下,每次打包时,dist目录不会被清空,需要先清楚上次打包的内容再重新打包

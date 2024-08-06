@@ -51,7 +51,7 @@
 样式资源经过<code v-pre>style-loader</code>的处理,被打包到dist目录的主文件中</li>
 </ul>
 <h3 id="_4-对资源进行优化" tabindex="-1"><a class="header-anchor" href="#_4-对资源进行优化"><span>4.对资源进行优化</span></a></h3>
-<p>将小于指定大小的资源转换为<code v-pre>dataurl</code>形式(<code v-pre>base64</code>)</p>
+<p>将小于指定大小的资源转换为<code v-pre>dataURI</code>形式(<code v-pre>base64</code>)</p>
 <div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="webpack.config.js"><pre v-pre class="language-javascript"><code><span class="line"><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"node:path"</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span>
 <span class="line">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span></span>
 <span class="line">    <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">"./src/main.js"</span><span class="token punctuation">,</span></span>
@@ -96,7 +96,7 @@
 <li>优点: 减少请求数量</li>
 <li>缺点: 资源体积将变大</li>
 </ul>
-<p>此时转换为base64的图片不会输出,它将以dataurl形式内置到js中</p>
+<p>此时转换为base64的图片不会输出,它将以dataURI形式内置到js中</p>
 <div class="custom-container tip"><p class="custom-container-title">TIP</p>
 <p>默认情况下,每次打包时,dist目录不会被清空,需要先清楚上次打包的内容再重新打包</p>
 </div>

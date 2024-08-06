@@ -1,5 +1,5 @@
 import comp from "D:/studySpace/front-end/node/webpack/webpack_note/docs/.vuepress/.temp/pages/index.html.vue"
-const data = JSON.parse("{\"path\":\"/\",\"title\":\"标题\",\"lang\":\"zh-CN\",\"frontmatter\":{\"lang\":\"zh-CN\",\"title\":\"标题\",\"description\":\"描述\",\"home\":true,\"heroImage\":\"/icon-webpack.svg\",\"actions\":[{\"text\":\"快速上手\",\"link\":\"/base/base-use\",\"type\":\"primary\"}]},\"headers\":[],\"git\":{},\"filePathRelative\":\"readme.md\"}")
+const data = JSON.parse("{\"path\":\"/\",\"title\":\"标题\",\"lang\":\"zh-CN\",\"frontmatter\":{\"lang\":\"zh-CN\",\"title\":\"标题\",\"description\":\"描述\",\"home\":true,\"heroImage\":\"/icon-webpack.svg\",\"actions\":[{\"text\":\"快速上手\",\"link\":\"/base/base-use\",\"type\":\"primary\"}]},\"headers\":[],\"git\":{\"updatedTime\":1722272246000,\"contributors\":[{\"name\":\"wzw\",\"email\":\"Wang.zhiwn@outlook.com\",\"commits\":1}]},\"filePathRelative\":\"readme.md\"}")
 export { comp, data }
 
 if (import.meta.webpackHot) {
