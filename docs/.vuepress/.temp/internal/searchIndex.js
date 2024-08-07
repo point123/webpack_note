@@ -113,6 +113,28 @@ export const searchIndex = [
     "headers": [
       {
         "level": 3,
+        "title": "监听文件变化",
+        "slug": "监听文件变化",
+        "link": "#监听文件变化",
+        "children": []
+      },
+      {
+        "level": 3,
+        "title": "开发服务器",
+        "slug": "开发服务器",
+        "link": "#开发服务器",
+        "children": []
+      }
+    ],
+    "path": "/base/dev-server.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
         "title": "引入字体图标",
         "slug": "引入字体图标",
         "link": "#引入字体图标",
@@ -127,6 +149,28 @@ export const searchIndex = [
       }
     ],
     "path": "/base/process-font-source.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [
+      {
+        "level": 3,
+        "title": "下载依赖",
+        "slug": "下载依赖",
+        "link": "#下载依赖",
+        "children": []
+      },
+      {
+        "level": 3,
+        "title": "配置webpack",
+        "slug": "配置webpack",
+        "link": "#配置webpack",
+        "children": []
+      }
+    ],
+    "path": "/base/process-html-source.html",
     "pathLocale": "/",
     "extraFields": []
   },
@@ -181,6 +225,13 @@ export const searchIndex = [
         "title": "Babel",
         "slug": "babel",
         "link": "#babel",
+        "children": []
+      },
+      {
+        "level": 3,
+        "title": "使用browserslist",
+        "slug": "使用browserslist",
+        "link": "#使用browserslist",
         "children": []
       }
     ],
@@ -250,6 +301,13 @@ export const searchIndex = [
     "title": "",
     "headers": [],
     "path": "/404.html",
+    "pathLocale": "/",
+    "extraFields": []
+  },
+  {
+    "title": "",
+    "headers": [],
+    "path": "/base/production-mode.html",
     "pathLocale": "/",
     "extraFields": []
   }

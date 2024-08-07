@@ -42,6 +42,18 @@ export default [
             {
                 text: "处理js资源",
                 link: "process-js-source"
+            },
+            {
+                text: "处理html资源",
+                link: "process-html-source"
+            },
+            {
+                text: "自动化与开发服务器",
+                link: "dev-server"
+            },
+            {
+                text: "生产模式介绍",
+                link: "production-mode"
             }
         ]
     }

@@ -53,6 +53,21 @@ export default {
                     text: "处理js资源",
                     link: "process-js-source",
                     collapsible: true
+                },
+                {
+                    text: "处理html资源",
+                    link: "process-html-source",
+                    collapsible: true
+                },
+                {
+                    text: "自动化与开发服务器",
+                    link: "dev-server",
+                    collapsible: true
+                },
+                {
+                    text: "生产模式介绍",
+                    link: "production-mode",
+                    collapsible: true
                 }
             ],
         }

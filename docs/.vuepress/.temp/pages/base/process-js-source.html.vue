@@ -244,6 +244,186 @@
 <div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="vscode中的eslint插件" tabindex="-1"><a class="header-anchor" href="#vscode中的eslint插件"><span>vscode中的eslint插件</span></a></h4>
 <p><code v-pre>vscode</code>扩展中安装<code v-pre>eslint</code>扩展,它能读取项目中的<code v-pre>eslint</code>配置文件,并且能实时的校验代码</p>
 <h3 id="babel" tabindex="-1"><a class="header-anchor" href="#babel"><span>Babel</span></a></h3>
-</div></template>
+<p>用于将<code v-pre>ES2015</code>+的语法转换为向下兼容的语法,以便在多数浏览器重能够运行</p>
+<h4 id="配置文件-1" tabindex="-1"><a class="header-anchor" href="#配置文件-1"><span>配置文件</span></a></h4>
+<div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="babel.config.js"><pre v-pre class="language-javascript"><code><span class="line">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span></span>
+<span class="line">    <span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="在webpack中使用" tabindex="-1"><a class="header-anchor" href="#在webpack中使用"><span>在Webpack中使用</span></a></h4>
+<ol>
+<li>安装依赖</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-highlighter="prismjs" data-ext="sh" data-title="sh"><pre v-pre class="language-bash"><code><span class="line"><span class="token function">npm</span> i <span class="token parameter variable">-D</span> babel-loader @babel/core @babel/preset-env</span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div></div></div><ul>
+<li><code v-pre>@babel/core</code>: <code v-pre>babel</code>的核心库</li>
+<li><code v-pre>@babel/preset-env</code>: <code v-pre>babel</code>的官方预设</li>
+<li><code v-pre>@babel-loader</code>: <code v-pre>Webpack</code>中使用<code v-pre>babel</code>所依赖的<code v-pre>loader</code></li>
+</ul>
+<ol start="2">
+<li>配置webpack文件</li>
+</ol>
+<div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="webpack.config.js"><pre v-pre class="language-javascript"><code><span class="line"><span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"node:path"</span><span class="token punctuation">)</span><span class="token punctuation">;</span></span>
+<span class="line"></span>
+<span class="line">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span></span>
+<span class="line">    <span class="token comment">// 入口</span></span>
+<span class="line">    <span class="token literal-property property">entry</span><span class="token operator">:</span> <span class="token string">"./src/main.js"</span><span class="token punctuation">,</span> <span class="token comment">// 相对路径</span></span>
+<span class="line">    <span class="token comment">// 输出</span></span>
+<span class="line">    <span class="token literal-property property">output</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">        <span class="token comment">// 输出路径,所有文件的输出目录</span></span>
+<span class="line">        <span class="token literal-property property">path</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>__dirname<span class="token punctuation">,</span> <span class="token string">"dist"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment">// 绝对路径</span></span>
+<span class="line">        <span class="token comment">// js打包输出文件名</span></span>
+<span class="line">        <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">"static/js/bundle.js"</span><span class="token punctuation">,</span></span>
+<span class="line">        <span class="token comment">// 自定清空上次打包的内容,在打包前将path整个目录清空再进行打包</span></span>
+<span class="line">        <span class="token literal-property property">clean</span><span class="token operator">:</span> <span class="token boolean">true</span></span>
+<span class="line">    <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token comment">// 插件</span></span>
+<span class="line">    <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">        <span class="token comment">// 省略</span></span>
+<span class="line">    <span class="token punctuation">]</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token comment">// loader加载器</span></span>
+<span class="line">    <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">        <span class="token comment">// loader的配置</span></span>
+<span class="line">        <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.css$</span><span class="token regex-delimiter">/</span><span class="token regex-flags">i</span></span><span class="token punctuation">,</span> <span class="token comment">// 匹配.css文件</span></span>
+<span class="line">                <span class="token comment">// 执行顺序,从后向前</span></span>
+<span class="line">                <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">                    <span class="token string">"style-loader"</span><span class="token punctuation">,</span> <span class="token comment">// 将js中的css通过创建style标签添加到html中</span></span>
+<span class="line">                    <span class="token string">"css-loader"</span> <span class="token comment">// 将css资源编译为commonjs的模块到js中</span></span>
+<span class="line">                <span class="token punctuation">]</span> </span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.less$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token comment">// loader: "", loader只能指定一个loader,而use能使用多个</span></span>
+<span class="line">                <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">                    <span class="token string">"style-loader"</span><span class="token punctuation">,</span> </span>
+<span class="line">                    <span class="token string">"css-loader"</span><span class="token punctuation">,</span> </span>
+<span class="line">                    <span class="token string">"less-loader"</span> <span class="token comment">// 将less编译为css文件</span></span>
+<span class="line">                <span class="token punctuation">]</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.s[ac]ss$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">                    <span class="token string">"style-loader"</span><span class="token punctuation">,</span> </span>
+<span class="line">                    <span class="token string">"css-loader"</span><span class="token punctuation">,</span> </span>
+<span class="line">                    <span class="token string">"sass-loader"</span> <span class="token comment">// 将scss编译为css文件</span></span>
+<span class="line">                <span class="token punctuation">]</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.styl$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line">                    <span class="token string">"style-loader"</span><span class="token punctuation">,</span></span>
+<span class="line">                    <span class="token string">"css-loader"</span><span class="token punctuation">,</span></span>
+<span class="line">                    <span class="token string">"stylus-loader"</span></span>
+<span class="line">                <span class="token punctuation">]</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(jpe?g|png|gif|avif|svg|webp)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"asset"</span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">parser</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">                    <span class="token literal-property property">dataUrlCondition</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">                        <span class="token comment">// 将小于103kb的资源转换为base64</span></span>
+<span class="line">                        <span class="token comment">// 优点: 减少请求数 缺点: 转换为base64URI大小会大于原始文件</span></span>
+<span class="line">                      <span class="token literal-property property">maxSize</span><span class="token operator">:</span> <span class="token number">103</span> <span class="token operator">*</span> <span class="token number">1024</span> <span class="token comment">// 103kb</span></span>
+<span class="line">                    <span class="token punctuation">}</span></span>
+<span class="line">                <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">generator</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">                    <span class="token comment">// 图片输出名称, hash:哈希值(:数字 可以截取前几位) ext:扩展名 query:查询参数,如果url包含?xxx</span></span>
+<span class="line">                    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">"static/images/[hash][ext][query]"</span></span>
+<span class="line">                <span class="token punctuation">}</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token comment">/* 单独处理字体文件,输出到指定文件夹 */</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(ttf|woff2?)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"asset/resource"</span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">generator</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">                    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">"static/fonts/[hash][ext][query]"</span></span>
+<span class="line">                <span class="token punctuation">}</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">            <span class="token comment">/* 其他资源全部输出到assets目录中 */</span></span>
+<span class="line">            <span class="token punctuation">{</span></span>
+<span class="line">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.(mp4|avi|flac)$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"asset/resource"</span><span class="token punctuation">,</span></span>
+<span class="line">                <span class="token literal-property property">generator</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">                    <span class="token literal-property property">filename</span><span class="token operator">:</span> <span class="token string">"static/assets/[hash][ext][query]"</span></span>
+<span class="line">                <span class="token punctuation">}</span></span>
+<span class="line">            <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line highlighted">            <span class="token punctuation">{</span></span>
+<span class="line highlighted">                <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line highlighted">                <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">node_modules</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token comment">// 排除node_modules中的js文件/</span></span>
+<span class="line highlighted">                <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line highlighted">                    <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"babel-loader"</span><span class="token punctuation">,</span></span>
+<span class="line highlighted">                    <span class="token comment">// babel的配置项</span></span>
+<span class="line highlighted">                    <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line highlighted">                        <span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span></span>
+<span class="line highlighted">                    <span class="token punctuation">}</span></span>
+<span class="line highlighted">                <span class="token punctuation">}</span></span>
+<span class="line highlighted">            <span class="token punctuation">}</span></span>
+<span class="line">        <span class="token punctuation">]</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token comment">// 模式</span></span>
+<span class="line">    <span class="token literal-property property">mode</span><span class="token operator">:</span> <span class="token string">"development"</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>对于<code v-pre>babel-loader</code>这一rules,也可以写成,省略外层的use</p>
+<div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="webpack.config.js"><pre v-pre class="language-javascript"><code><span class="line"><span class="token punctuation">{</span></span>
+<span class="line">    <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">node_modules</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token comment">// 排除node_modules中的js文件/</span></span>
+<span class="line">    <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"babel-loader"</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">        <span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span></span>
+<span class="line">    <span class="token punctuation">}</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>同时,也可以将配置单独写为babel配置文件,webpack会读取配置文件</p>
+<h4 id="使用babel配置文件" tabindex="-1"><a class="header-anchor" href="#使用babel配置文件"><span>使用babel配置文件</span></a></h4>
+<CodeGroup>
+<CodeGroupItem title="babel.config.js">
+<div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="babel.config.js"><pre v-pre class="language-javascript"><code><span class="line">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span></span>
+<span class="line">    <span class="token literal-property property">presets</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"@babel/preset-env"</span><span class="token punctuation">]</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></CodeGroupItem>
+<CodeGroupItem title="webpack.config.js">
+<div class="language-javascript line-numbers-mode" data-highlighter="prismjs" data-ext="js" data-title="webpack.config.js"><pre v-pre class="language-javascript"><code><span class="line"><span class="token punctuation">{</span></span>
+<span class="line">    <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.js$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token literal-property property">exclude</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">node_modules</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token comment">// 排除node_modules中的js文件/</span></span>
+<span class="line">    <span class="token literal-property property">loader</span><span class="token operator">:</span> <span class="token string">"babel-loader"</span><span class="token punctuation">,</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></CodeGroupItem>
+</CodeGroup>
+<h3 id="使用browserslist" tabindex="-1"><a class="header-anchor" href="#使用browserslist"><span>使用browserslist</span></a></h3>
+<p>按照上面的配置如果直接运行,可能会发现输出的语法没有变化,为了展示效果,可以设置需要兼容的浏览器版本</p>
+<p>可以直接在<code v-pre>package.json</code>中添加<code v-pre>browserslist</code>属性</p>
+<div class="language-json line-numbers-mode" data-highlighter="prismjs" data-ext="json" data-title="package.json"><pre v-pre class="language-json"><code><span class="line"><span class="token punctuation">{</span></span>
+<span class="line">    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"webpack_note"</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">        <span class="token comment">// 省略</span></span>
+<span class="line">    <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"keywords"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"author"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"ISC"</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span></span>
+<span class="line">    <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span></span>
+<span class="line">        <span class="token comment">// 省略</span></span>
+<span class="line">    <span class="token punctuation">}</span><span class="token punctuation">,</span></span>
+<span class="line highlighted">    <span class="token property">"browserslist"</span><span class="token operator">:</span> <span class="token punctuation">[</span></span>
+<span class="line highlighted">        <span class="token string">">1%"</span><span class="token punctuation">,</span></span>
+<span class="line highlighted">        <span class="token string">"not dead"</span><span class="token punctuation">,</span></span>
+<span class="line highlighted">        <span class="token string">"ie>=8"</span></span>
+<span class="line highlighted">    <span class="token punctuation">]</span></span>
+<span class="line"><span class="token punctuation">}</span></span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>也可以创建单独的<code v-pre>browserslist</code>或<code v-pre>.browserslistrc</code>配置文件,webpack会读取配置文件</p>
+<div class="language-plaintext line-numbers-mode" data-highlighter="prismjs" data-ext="plaintext" data-title="browserslist"><pre v-pre class="language-plaintext"><code><span class="line">> 1%</span>
+<span class="line">not dead</span>
+<span class="line">ie >=8</span>
+<span class="line"></span></code></pre>
+<div class="line-numbers" aria-hidden="true" style="counter-reset:line-number 0"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></div></template>
 
 
