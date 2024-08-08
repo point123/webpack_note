@@ -216,7 +216,7 @@ module.exports = {
                         loader: "postcss-loader", // 使用postcss-loader处理css
                         options: {
                             // postcss配置选项,也可以使用单独的postcss配置文件
-                            postCssOptions: {
+                            postcssOptions: {
                                 // postcss预设
                                 plugins: ["postcss-preset-env"]
                             }
@@ -237,7 +237,7 @@ module.exports = {
                         loader: "postcss-loader", // 使用postcss-loader处理css
                         options: {
                             // postcss配置选项,也可以使用单独的postcss配置文件
-                            postCssOptions: {
+                            postcssOptions: {
                                 // postcss预设
                                 plugins: ["postcss-preset-env"]
                             }
@@ -256,7 +256,7 @@ module.exports = {
                         loader: "postcss-loader", // 使用postcss-loader处理css
                         options: {
                             // postcss配置选项,也可以使用单独的postcss配置文件
-                            postCssOptions: {
+                            postcssOptions: {
                                 // postcss预设
                                 plugins: ["postcss-preset-env"]
                             }
@@ -275,7 +275,7 @@ module.exports = {
                         loader: "postcss-loader", // 使用postcss-loader处理css
                         options: {
                             // postcss配置选项,也可以使用单独的postcss配置文件
-                            postCssOptions: {
+                            postcssOptions: {
                                 // postcss预设
                                 plugins: ["postcss-preset-env"]
                             }
@@ -338,7 +338,8 @@ const EslintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const getStyleLoader = () => {
+// 不能使用箭头函数,因为箭头函数没有arguments
+function getStyleLoader() {
     return [
         MiniCssExtractPlugin.loader,
         "css-loader",
@@ -467,7 +468,7 @@ npm i -D css-minimizer-webpack-plugin
 `postcss`结合`cssnano`也可以压缩css
 
 #### 配置
-```javascript title="webpack.common.js"
+```javascript{6,53-60} title="webpack.common.js"
 // webpack通用配置
 const path = require("node:path");
 const EslintWebpackPlugin = require("eslint-webpack-plugin");
@@ -517,8 +518,17 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "static/css/main.css",
         }),
-        new CssMinimizerWebpackPlugin()
+        // 如果直接写在这里,则无论什么模式,都会压缩css
+        // new CssMinimizerWebpackPlugin()
     ],
+    optimization: {
+        // 在这里配置,则进会在生产模式下压缩,而不在开发模式下压缩
+        minimizer: [
+            new CssMinimizerWebpackPlugin()
+        ],
+        // 控制是否压缩,如果为false,则无论在什么模式下都会压缩,如果为true,则在任何模式下都会压缩
+        // minimize: false
+    },
     // loader加载器
     module: {
         // loader的配置
@@ -585,3 +595,9 @@ module.exports = {
     }
 }
 ```
+
+::: tip 提示
+如果在`plugins`中直接使用`css-minimizer-webpack-plugin`,这会导致无论在什么模式下都压缩
+
+如果配置了`optimization.minimize`,也会手动控制是否压缩`css`而忽略模式
+:::
