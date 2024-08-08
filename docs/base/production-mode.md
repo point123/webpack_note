@@ -1,9 +1,16 @@
 <h1>生产模式介绍</h1>
 
-### 1.
-将配置文件导出为函数,函数的参数有env, argv;
-argv.mode必须在命令行中使用--mode="xxx"指定,在配置文件中指定的无效(undefined)
+在生产模式下,许多配置和开发模式的配置不太相同,需要针对不同的模式配置不同的配置项
 
+### 使用同一个配置文件
+
+可以使用同一个配置文件`webpack.config.js`,通过不同的模式写不同的值
+
+这种情况下,需要将配置文件导出为一个函数,函数有两个参数`env`,`argv`,其中`argv.mode`为模式
+
+且这种情况下,配置文件中指定的`mode`无法被`argv.mode`读取,必须在命令行指定添加`--mode`设置,否则值始终为`undefined`
+
+```javascript title="webpack.config.js"
 const path = require("node:path");
 const EslintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -136,11 +143,42 @@ module.exports = (env, argv) => {
     }
     return config;
 }
+```
 
-### 2.
-安装webpack-merge
-创建webpack.common.js, webpack.dev.js, webpack.prod.js
+```json title="package.json"
+// ...
+"scripts": {
+    "dev": "webpack --mode=development",
+    "build": "webpack --mode=production",
+}
+```
 
+### 使用多个配置文件
+
+也可以使用多个配置文件,在不同的模式下使用不同的配置文件
+
+在开发模式下使用`webpack.dev.js`,在生产环境下使用`webpack.prod.js`
+
+还可以创建一个`webpack.common.js`,将公共配置提取到这个文件
+
+再安装`webpack-merge`将它与`webpack.dev.js`和`webpack.prod.js`合并配置
+
+```
+|-- config
+|     |-- webpack.common.js
+|     |-- webpack.dev.js
+|     |-- webpack.prod.js
+|-- src
+```
+
+安装依赖
+```bash
+npm i -D webpack-merge
+```
+
+:::: code-group
+::: code-group-item webpack.common.js
+```javascript title="webpack.common.js"
 // webpack通用配置
 const path = require("node:path");
 const EslintWebpackPlugin = require("eslint-webpack-plugin");
@@ -258,17 +296,11 @@ module.exports = {
         ],
     }
 }
+```
+:::
 
-
-// webpack生产模式配置
-const WebpackMerge = require('webpack-merge');
-const WebpackCommonConfig = require("./webpack.common");
-
-module.exports = WebpackMerge.merge(WebpackCommonConfig, {
-    mode: 'production',
-});
-
-
+::: code-group-item webpack.dev.js
+```javascript title="webpack.dev.js"
 // webpack开发模式配置
 const { merge } = require('webpack-merge');
 const WebpackCommonConfig = require("./webpack.common");
@@ -280,11 +312,25 @@ module.exports = merge(WebpackCommonConfig, {
         port: "auto",
     },
 });
+```
+:::
 
+::: code-group-item webpack.prod.js
+```javascript title="webpack.prod.js"
+// webpack生产模式配置
+const WebpackMerge = require('webpack-merge');
+const WebpackCommonConfig = require("./webpack.common");
 
-package.json
+module.exports = WebpackMerge.merge(WebpackCommonConfig, {
+    mode: 'production',
+});
+```
+:::
 
-  "scripts": {
+::: code-group-item package.json
+```json{3,8} title="package.json"
+//...
+"scripts": {
     "serve": "webpack serve --config ./config/webpack.dev.js",
     "default": "webpack serve",
     "dev": "webpack --mode=development",
@@ -292,4 +338,11 @@ package.json
     "build": "webpack --mode=production",
     "prod": "webpack --config ./config/webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
+},
+```
+:::
+::::
+
+::: tip 提示
+在上面的例子中,由于webpack配置文件在config目录中,所以配置文件中使用绝对路径的地方需要返回上一级
+:::

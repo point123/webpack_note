@@ -68,6 +68,11 @@ export default {
                     text: "生产模式介绍",
                     link: "production-mode",
                     collapsible: true
+                },
+                {
+                    text: "css处理",
+                    link: "process-css-source",
+                    collapsible: true
                 }
             ],
         }
