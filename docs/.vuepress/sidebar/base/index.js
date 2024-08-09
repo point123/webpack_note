@@ -1,5 +1,5 @@
 export default {
-    "/": [
+    "/base": [
         {
             text: "基础配置",
             prefix: "/base/",
