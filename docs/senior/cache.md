@@ -30,8 +30,8 @@ module.exports = {
             configType: "flat", // 默认值为eslintrc,需要修改为flat扁平化配置,否则会报错无法找到配置文件
             context: path.resolve(__dirname, "../src"), // 只检查src目录
             exclude: path.resolve(__dirname, "../node_modules"), // 排除node_modules,没必要,有上面的配置
-            cache: true, // 开启缓存
-            // 缓存目录
+            cache: true, // 开启缓存,默认为true
+            // 缓存文件名,默认为node_modules/.cache/eslint-webpack-plugin/.eslintcache
             cacheLocation: path.resolve(__dirname, "../node_modules/.cache/eslintcache"),
         }),
         new HtmlWebpackPlugin({
