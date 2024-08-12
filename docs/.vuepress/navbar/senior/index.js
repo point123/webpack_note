@@ -21,6 +21,14 @@ export default [
                     {
                         text: "include/exclude",
                         link: "includeAndExclude"
+                    },
+                    {
+                        text: "cache",
+                        link: "cache"
+                    },
+                    {
+                        text: "thread",
+                        link: "thread"
                     }
                 ]
             }

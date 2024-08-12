@@ -28,6 +28,16 @@ export default {
                             text: "include/exclude",
                             link: "includeAndExclude",
                             collapsible: true
+                        },
+                        {
+                            text: "cache",
+                            link: "cache",
+                            collapsible: true
+                        },
+                        {
+                            text: "thread",
+                            link: "thread",
+                            collapsible: true
                         }
                     ]
                 }
