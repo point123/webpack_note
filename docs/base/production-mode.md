@@ -148,8 +148,8 @@ module.exports = (env, argv) => {
 ```json title="package.json"
 // ...
 "scripts": {
-    "dev": "webpack --mode=development",
-    "build": "webpack --mode=production",
+    "dev:default-config-build": "webpack --mode=development",
+    "build:default-config-build": "webpack --mode=production",
 }
 ```
 
@@ -328,15 +328,16 @@ module.exports = WebpackMerge.merge(WebpackCommonConfig, {
 :::
 
 ::: code-group-item package.json
-```json{3,8} title="package.json"
+```json{3,9} title="package.json"
 //...
 "scripts": {
-    "serve": "webpack serve --config ./config/webpack.dev.js",
-    "default": "webpack serve",
-    "dev": "webpack --mode=development",
+    "dev:dev-config-serve": "webpack serve --config ./config/webpack.dev.js",
+    "dev:default-config-serve": "webpack serve",
+    "dev:dev-config-build": "webpack --config ./config/webpack.dev.js",
+    "dev:default-config-build": "webpack --mode=development",
     "watch": "webpack watch",
-    "build": "webpack --mode=production",
-    "prod": "webpack --config ./config/webpack.prod.js",
+    "build:default-config-build": "webpack --mode=production",
+    "build:prod-config-build": "webpack --config ./config/webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
 },
 ```
