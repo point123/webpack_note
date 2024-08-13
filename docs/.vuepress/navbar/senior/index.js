@@ -31,6 +31,15 @@ export default [
                         link: "thread"
                     }
                 ]
+            },
+            {
+                text: "减少代码体积",
+                children: [
+                    {
+                        text: "tree-shaking",
+                        link: "tree-shaking"
+                    }
+                ]
             }
         ],
     }

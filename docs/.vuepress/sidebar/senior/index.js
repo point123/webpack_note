@@ -40,6 +40,17 @@ export default {
                             collapsible: true
                         }
                     ]
+                },
+                {
+                    text: "减少代码体积",
+                    link: "tree-shaking",
+                    collapsible: true,
+                    children: [
+                        {
+                            text: "tree-shaking",
+                            link: "tree-shaking"
+                        }
+                    ]
                 }
             ]
         }
