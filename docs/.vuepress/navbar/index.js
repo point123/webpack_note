@@ -11,5 +11,9 @@ export default [
     {
         text: "中文网站",
         link: "https://webpack.docschina.org/"
+    },
+    {
+        text: "配置默认值",
+        link: "https://github.com/webpack/webpack/blob/main/lib/config/defaults.js"
     }
 ]
