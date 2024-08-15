@@ -143,7 +143,7 @@ function square(x) {
 :::
 ::::
 
-而将`usedExports`设置为`true`,且当`minimize`为`true`,那么打包结果中将会删除未使用的代码
+`usedExports`设置为`true`,且当`minimize`为`true`,那么打包结果中将会删除未使用的代码
 :::: code-group
 ::: code-group-item webpack.config.js
 ```javascript{4,5}
@@ -156,7 +156,7 @@ optimization: {
 ```
 :::
 ::: code-group-item index.bundle.js
-```javascript
+```javascript{17-18}
 // 原版是压缩过的,方便阅读格式化并删除部分内容
 (self.webpackChunkwebpack_test=self.webpackChunkwebpack_test||[])
 .push([
@@ -182,7 +182,7 @@ optimization: {
 ```
 :::
 ::::
-而`usedExports`设置为`true`,`minimize`为`false`时,虽然代码被压缩,但是未使用的代码仍然存在于打包结果中
+而`usedExports`不设置或设置为`false`,`minimize`为`true`时,虽然代码被压缩,但是未使用的代码仍然存在于打包结果中
 :::: code-group
 ::: code-group-item webpack.config.js
 ```javascript{4,5}
@@ -195,7 +195,7 @@ optimization: {
 ```
 :::
 ::: code-group-item index.bundle.js
-```javascript{21-23}
+```javascript{21-24}
 // 原版是压缩过的,方便阅读格式化并删除部分内容
 (self.webpackChunkwebpack_test=self.webpackChunkwebpack_test||[])
 .push([
@@ -229,7 +229,7 @@ optimization: {
 ::::
 
 生产模式什么都不配置
-```javascript
+```javascript{9}
 (self.webpackChunkwebpack_test=self.webpackChunkwebpack_test||[])
 .push([
     [57],
@@ -244,7 +244,7 @@ optimization: {
     e=>{e(e.s=540)}
 ]);
 ```
-生产模式 usedExports:false
+生产模式 `usedExports`:`false`
 ```javascript
 (self.webpackChunkwebpack_test=self.webpackChunkwebpack_test||[])
 .push([
@@ -261,103 +261,96 @@ optimization: {
     e=>{e(e.s=540)}
 ]);
 ```
-生产模式 usedExports:false, minimize: false
-```javascript
-(self["webpackChunkwebpack_test"] = self["webpackChunkwebpack_test"] || []).push([[57],{
+这里不符合预期,没有使用`usedExports`,但是仍然删除了,gpt的解释为:
 
-/***/ 540:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+    1.开发模式下的优化限制:
 
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
+        在开发模式下,Webpack 默认的优化策略是为了提高构建速度和代码的可读性,而不是最大化代码的精简度。即使你手动启用了`minimize`,`Terser`的一些优化可能不会像在生产模式下那样激进。因为开发模式主要关注于快速迭代和调试体验。
 
-;// CONCATENATED MODULE: ./src/js/math.js
-function cube(x) {
-    return x ** 3;
-}
+    2.`usedExports`的影响:
 
-function square(x) {
-    return x * x;
-}
-;// CONCATENATED MODULE: ./src/js/log.js
-console.log("这是一个副作用");
+        `usedExports`主要影响Webpack对模块的导出分析。如果设置为`false`,`Webpack`不会标记未使用的导出,而这对`Terser`的进一步优化起到了一定的阻碍作用。虽然你启用了`minimize`,`Terser`依旧可能无法完全确定哪些代码是死代码,尤其是在开发模式下。
 
-function Pixel() {
-    return "Pixel";
-}
+    3.生产模式 vs 开发模式:
 
-;// CONCATENATED MODULE: ./src/index.js
+        在生产模式下,`Webpack`进行了更深层次的优化,`minimize`和`usedExports`之间的协同工作会更有效。这意味着`Webpack`在标记未使用的导出后,`Terser`能更精准地删除死代码。但在开发模式下,这种协同工作可能不如生产模式那么完善,因此可能会看到一些未使用的代码保留在最终输出中。
 
+生产模式 `usedExports`:`false`, `minimize`: `false`
+```javascript{13-15}
+(self["webpackChunkwebpack_test"] = self["webpackChunkwebpack_test"] || [])
+.push([
+    [57],
+    {
+        540:((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+            // ESM COMPAT FLAG
+            __webpack_require__.r(__webpack_exports__);
+            ;// CONCATENATED MODULE: ./src/js/math.js
+            function cube(x) {
+                return x ** 3;
+            }
 
+            function square(x) {
+                return x * x;
+            }
+            ;// CONCATENATED MODULE: ./src/js/log.js
+            console.log("这是一个副作用");
 
+            function Pixel() {
+                return "Pixel";
+            }
 
-console.log('hello world');
+            ;// CONCATENATED MODULE: ./src/index.js
 
-console.log(a.filter());
+            console.log('hello world');
 
-console.log(cube(3));
+            console.log(a.filter());
 
-// usedExports: 默认为true,依赖于providedExports
-// sideEffects: 默认为true,依赖于providedExports
-// providedExports: 默认true
+            console.log(cube(3));
+        })
 
-/***/ })
-
-},
-/******/ __webpack_require__ => { // webpackRuntimeModules
-/******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ var __webpack_exports__ = (__webpack_exec__(540));
-/******/ }
+    },
+    __webpack_require__ => { // webpackRuntimeModules
+        var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+        var __webpack_exports__ = (__webpack_exec__(540));
+    }
 ]);
 ```
 
-生产模式 minimize: false
+生产模式 `minimize`: `false`
 
-```javascript
-"use strict";
-(self["webpackChunkwebpack_test"] = self["webpackChunkwebpack_test"] || []).push([[57],{
+```javascript{11-13}
+(self["webpackChunkwebpack_test"] = self["webpackChunkwebpack_test"] || [])
+.push([
+    [57],
+    {
+        540:(() => {
+            ;// CONCATENATED MODULE: ./src/js/math.js
+            function cube(x) {
+                return x ** 3;
+            }
 
-/***/ 540:
-/***/ (() => {
+            function square(x) {
+                return x * x;
+            }
+            ;// CONCATENATED MODULE: ./src/js/log.js
+            console.log("这是一个副作用");
 
+            function Pixel() {
+                return "Pixel";
+            }
 
-;// CONCATENATED MODULE: ./src/js/math.js
-function cube(x) {
-    return x ** 3;
-}
+            ;// CONCATENATED MODULE: ./src/index.js
 
-function square(x) {
-    return x * x;
-}
-;// CONCATENATED MODULE: ./src/js/log.js
-console.log("这是一个副作用");
+            console.log('hello world');
 
-function Pixel() {
-    return "Pixel";
-}
+            console.log(a.filter());
 
-;// CONCATENATED MODULE: ./src/index.js
-
-
-
-
-console.log('hello world');
-
-console.log(a.filter());
-
-console.log(cube(3));
-
-// usedExports: 默认为true,依赖于providedExports
-// sideEffects: 默认为true,依赖于providedExports
-// providedExports: 默认true
-
-/***/ })
-
-},
-/******/ __webpack_require__ => { // webpackRuntimeModules
-/******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ var __webpack_exports__ = (__webpack_exec__(540));
-/******/ }
+            console.log(cube(3));
+        })
+    },
+    __webpack_require__ => { // webpackRuntimeModules
+        var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+        var __webpack_exports__ = (__webpack_exec__(540));
+    }
 ]);
-//# sourceMappingURL=index.bundle.js.map
 ```
