@@ -261,19 +261,7 @@ optimization: {
     e=>{e(e.s=540)}
 ]);
 ```
-这里不符合预期,没有使用`usedExports`,但是仍然删除了,gpt的解释为:
-
-    1.开发模式下的优化限制:
-
-        在开发模式下,Webpack 默认的优化策略是为了提高构建速度和代码的可读性,而不是最大化代码的精简度。即使你手动启用了`minimize`,`Terser`的一些优化可能不会像在生产模式下那样激进。因为开发模式主要关注于快速迭代和调试体验。
-
-    2.`usedExports`的影响:
-
-        `usedExports`主要影响Webpack对模块的导出分析。如果设置为`false`,`Webpack`不会标记未使用的导出,而这对`Terser`的进一步优化起到了一定的阻碍作用。虽然你启用了`minimize`,`Terser`依旧可能无法完全确定哪些代码是死代码,尤其是在开发模式下。
-
-    3.生产模式 vs 开发模式:
-
-        在生产模式下,`Webpack`进行了更深层次的优化,`minimize`和`usedExports`之间的协同工作会更有效。这意味着`Webpack`在标记未使用的导出后,`Terser`能更精准地删除死代码。但在开发模式下,这种协同工作可能不如生产模式那么完善,因此可能会看到一些未使用的代码保留在最终输出中。
+这里不符合预期,没有使用`usedExports`,但是仍然删除了,下面有解释
 
 生产模式 `usedExports`:`false`, `minimize`: `false`
 ```javascript{13-15}
@@ -354,3 +342,142 @@ optimization: {
     }
 ]);
 ```
+
+`usedExports`用于给未使用的模块成员做标记
+
+删除压缩代码是通过`terser-webpack-plugin`来完成的,它由`minimize`控制,`minimize`在生产模式下,默认值为`true`
+
+而`terser-webpack-plugin`通过`terser`来压缩删除代码
+
+`terser`则使用配置项`unused`来删除未使用的代码,默认值为`true`即默认开启删除;
+
+在多数情况下,配置之间的结合使用都是符合预期的
+
+但是在生产模式下,当`usedExports`设置为`false`,`minimize`为`true`,且`minimizer`中`terser-webpack-plugin`中的配置项`unused`为true时进行打包,未使用的代码,上述为`square`函数,仍然被删除了
+
+这是因为在生产模式下,`optimization.concatenateModules`默认值为`true`,它会将打包结果中每个模块都是一个函数变为尽量将多个模块合并输出到一个函数中,所以即使没有被`usedExports`标记为未使用的模块成员,但是被合并到一起,也会被`terser`删除
+
+### sideEffects
+
+`sideEffects`用于告诉`webpack`文件是否存在副作用或者哪些模块存在副作用
+
+副作用: 模块导入或执行时会执行特殊行为不直接返回值的代码,如影响全局变量,IO操作的代码等
+
+当`webpack`遇到没有副作用且没有被使用的模块时,会跳过该文件,即`sideEffects`是针对整个文件的,它不依赖于`terser`
+
+`sideEffects`可以在`package.json`中配置,也可以在`webpack`配置文件中配置,默认情况下,`webpack`会假设模块是存在副作用的
+
+`sideEffects`也可以在`webpack`配置文件中的`module.rule.sideEffects`中配置
+
+新增一个`log.js`
+:::: code-group
+::: code-group-item log.js
+```javascript
+// 用这行代码模拟副作用
+console.log("这是一个副作用");
+
+export function Pixel() {
+    return "Pixel";
+}
+
+```
+:::
+::: code-group-item index.js
+```javascript
+import "./css/main.css";
+import { cube } from "./js/math";
+import { Pixel } from "./js/log";
+
+console.log('hello world');
+console.log(a.filter());
+console.log(cube(3));
+```
+:::
+::::
+
+当`package.json`中将`sideEffects`设置为`false`时,会默认所有模块都没有副作用,此时会删除未使用
+的模块,包括`css`
+```
+dist
+  |- index.bundle.js
+  |- index.bundle.js.map
+  |_ index.html
+```
+可以看到,`css`也被当做没有副作用而删除
+
+且输出结果中不包含`log.js`的内容,无法搜索到`Pixel`函数
+```javascript title="index.bundle.js"
+"use strict";
+(self["webpackChunkwebpack_test"] = self["webpackChunkwebpack_test"] || []).push([["index"],{
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
+
+/* harmony import */ var _js_math__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/math */ "./src/js/math.js");
+
+
+
+
+console.log('hello world');
+
+console.log(a.filter());
+
+console.log((0,_js_math__WEBPACK_IMPORTED_MODULE_0__.cube)(3));
+
+/***/ }),
+
+/***/ "./src/js/math.js":
+/*!************************!*\
+  !*** ./src/js/math.js ***!
+  \************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   cube: () => (/* binding */ cube)
+/* harmony export */ });
+/* unused harmony export square */
+function cube(x) {
+    return x ** 3;
+}
+
+function square(x) {
+    return x * x;
+}
+
+/***/ })
+
+},
+/******/ __webpack_require__ => { // webpackRuntimeModules
+/******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
+/******/ var __webpack_exports__ = (__webpack_exec__("./src/index.js"));
+/******/ }
+]);
+```
+
+如果模块是有副作用的,那么可以将`sideEffects`设置为`flag`值,用以匹配含有副作用的模块
+
+```json title="package.json"
+"sideEffects": ["*.{css,less,scss,sass,styl}"],
+```
+再进行打包,样式文件就不会被删除了,如果想要让`log.js`不被删除,则只要添加到`sideEffects`中即可
+
+在`module.rule.sideEffects`中配置
+```javascript{7} title="webpack.common.js"
+module.exports = {
+    // ...
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                sideEffects: true,
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
+            }
+            // ...
+        ]
+    }
+}
+```
+这样,这些样式文件也不会被删除
