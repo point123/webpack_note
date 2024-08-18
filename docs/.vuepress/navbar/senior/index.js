@@ -38,6 +38,10 @@ export default [
                     {
                         text: "tree-shaking",
                         link: "tree-shaking"
+                    },
+                    {
+                        text: "babel",
+                        link: "babel"
                     }
                 ]
             }
