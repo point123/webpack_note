@@ -42,6 +42,10 @@ export default [
                     {
                         text: "babel",
                         link: "babel"
+                    },
+                    {
+                        text: "image minimize",
+                        link: "image-minimize"
                     }
                 ]
             }
