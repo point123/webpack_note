@@ -6,10 +6,12 @@
 
 可以使用`image-minimizer-webpack-plugin`插件对图片进行压缩
 
-这个插件支持使用两种工具来压缩图片
+这个插件支持使用以下工具来压缩图片
 
 * `imagemin`: 默认情况下优化图片,稳定且支持所有类型的图片
-* `squoosh`: 实验模式下支持`.jpg`,`.jpeg`,`.png`,`.webp`,`.avif`类型的图片
+* `squoosh`(已弃用): 实验模式下支持`.jpg`,`.jpeg`,`.png`,`.webp`,`.avif`类型的图片
+* `sharp`: 高性能`Noje.js`图像处理,是调整和压缩`JPEG`,`PNG`,`WebP`,`AVIF`,`TIFF`图像的最快模块,它使用`libvips`库
+* `svgo`: 用于优化`svg`的工具,仅支持`.svg`,`imagemin`中也存在`imagemin-svgo`插件
 
 `imagemin`依赖扩展插件压缩图片
 * `imagemin-pngquant`
@@ -72,8 +74,12 @@ npm i -D image-minimizer-webpack-plugin
 ```
 
 ### 使用imagemin进行压缩
+安装压缩生成工具
+```bash
+npm i -D imagemin
+```
 
-安装无损压缩的插件
+安装`imagemin`进行无损压缩所需要的插件
 ```bash
 npm i -D imagemin-optipng imagemin-jpegtran imagemin-gifsicle imagemin-svgo
 ```
@@ -88,29 +94,37 @@ module.exports = {
         minimizer: [
             // ... 省略
             new ImageMinimizerWebpackPlugin({
-                minimizerOptions: {
-                    plugins: [
-                        ["gifsicle", { interlaced: true }],
-                        ["jpegtran", { progressive: true }],
-                        ["optipng", { optimizationLevel: 5 }],
-                        [
-                            "svgo",
-                            {
-                                plugins: extendDefaultPlugins([
-                                    {
-                                        name: "removeViewBox",
-                                        active: false
-                                    },
-                                    {
-                                        name: "addAttributesToSVGElement",
-                                        params: {
-                                            attributes: [{ xmlns: "http://www.w3.org/2000/svg" }]
+                // 旧的写法,已经失效(docschina中仍然使用这种方式)
+                // minimizerOptions: {
+                //     plugins: []
+                // }
+                // 新写法
+                minimizer: {
+                    implementation: ImageMinimizerWebpackPlugin.imageminMinify,
+                    options: {
+                        plugins: [
+                            ["gifsicle", { interlaced: true }],
+                            ["jpegtran", { progressive: true }],
+                            ["optipng", { optimizationLevel: 5 }],
+                            [
+                                "svgo",
+                                {
+                                    plugins: extendDefaultPlugins([
+                                        {
+                                            name: "removeViewBox",
+                                            active: false
+                                        },
+                                        {
+                                            name: "addAttributesToSVGElement",
+                                            params: {
+                                                attributes: [{ xmlns: "http://www.w3.org/2000/svg" }]
+                                            }
                                         }
-                                    }
-                                ])
-                            }
+                                    ])
+                                }
+                            ]
                         ]
-                    ]
+                    }
                 }
             })
         ]
@@ -118,4 +132,129 @@ module.exports = {
 }
 ```
 
-### 使用squoosh进行压缩
+### 使用squoosh进行压缩(已弃用)
+
+英文官网已经弃用
+
+安装依赖
+```bash
+npm i -D @squoosh/lib
+```
+推荐使用`@squoosh/lib`并使用默认选项进行有损压缩
+```javascript title="webpack.common.js"
+// ... 省略
+const ImageMinimizerWebpackPlugin = require("image-minimizer-webpack-plugin");
+module.exports = {
+    // ... 省略
+    optimization: {
+        minimizer: [
+            // ... 省略
+            new ImageMinimizerWebpackPlugin({
+                // 以前的写法
+                // minify: ImageMinimizerWebpackPlugin.squooshMinify
+                // 现在的写法: squoosh 依赖于 node 14,16版本
+                minimizer: {
+                    implementation: ImageMinimizerWebpackPlugin.squooshMinify,
+                }
+            })
+        ]
+    }
+}
+```
+
+推荐使用`squoosh`选项和`minimizerOptions.encodeOptions`进行无损压缩
+```javascript title="webpack.common.js"
+// ... 省略
+const ImageMinimizerWebpackPlugin = require("image-minimizer-webpack-plugin");
+module.exports = {
+    // ... 省略
+    optimization: {
+        // ... 省略
+        new ImageMinimizerWebpackPlugin({
+            minify: ImageMinimizerWebpackPlugin.squooshMinify,
+            minimizerOptions: {
+                encodeOptions: {
+                    mozjpeg: {
+                        // 该设置接近无损,但无法保证
+                        // https://github.com/GoogleChromeLabs/squoosh/issues/85
+                        quality: 100
+                    },
+                    webp: {
+                        lossless: 1
+                    },
+                    avif: {
+                        // https://github.com/GoogleChromeLabs/squoosh/blob/dev/codecs/avif/enc/README.md
+                        cqLevel: 0
+                    }
+                }
+            }
+        })
+    }
+}
+```
+
+### 使用sharp进行压缩
+
+安装`sharp`
+```bash
+npm i -D sharp
+```
+
+有损压缩,推荐使用默认配置
+```javascript title="webpack.common.js"
+// ... 省略
+const ImageMinimizerWebpackPlugin = require("image-minimizer-webpack-plugin");
+module.exports = {
+    // ... 省略
+    optimization: {
+        // ... 省略
+        minimizer: [
+            // ... 省略
+            new ImageMinimizerWebpackPlugin({
+                minimizer: {
+                    implementation: ImageMinimizerWebpackPlugin.sharpMinify,
+                }
+            })
+        ]
+    }
+}
+```
+
+关于配置项,具体查看`sharp`的[文档](https://sharp.pixelplumbing.com/api-output#jpeg)
+
+无损压缩,建议使用如下配置项
+```javascript title="webpack.common.js"
+// ... 省略
+const ImageMinimizerWebpackPlugin = require("image-minimizer-webpack-plugin");
+module.exports = {
+    // ... 省略
+    optimization: {
+        // ... 省略
+        minimizer: [
+            // ... 省略
+            new ImageMinimizerWebpackPlugin({
+                minimizer: {
+                    implementation: ImageMinimizerWebpackPlugin.sharpMinify,
+                    options: {
+                        encodeOptions: {
+                            jpeg: {
+                                quantity: 100
+                            },
+                            webp: {
+                                lossless: true
+                            },
+                            avif: {
+                                lossless: true
+                            },
+                            // png的quality默认值为100,即无损
+                            png: {},
+                            // gif不支持无损压缩
+                            gif: {}
+                        }
+                    }
+                }
+            })
+        ]
+    }
+}
+```
