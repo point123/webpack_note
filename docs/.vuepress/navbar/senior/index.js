@@ -48,6 +48,15 @@ export default [
                         link: "image-minimize"
                     }
                 ]
+            },
+            {
+                text: "优化运行性能",
+                children: [
+                    {
+                        text: "code-split",
+                        link: "code-split"
+                    }
+                ]
             }
         ],
     }

@@ -84,6 +84,14 @@ npm i -D imagemin
 npm i -D imagemin-optipng imagemin-jpegtran imagemin-gifsicle imagemin-svgo
 ```
 
+::: tip
+在安装这些插件的过程中,可能会出现因为无法解析`raw.githubusercontent.com`安装失败
+
+需要解析`raw.githubusercontent.com`的`ip`(如`ip138`)并添加到`hosts`文件中
+
+修改`windows/system32/drivers/etc/hosts`文件并设置`185.199.111.133 raw.githubusercontent.com`
+:::
+
 配置
 ```javascript title="webpack.common.js"
 // ... 省略
@@ -131,6 +139,25 @@ module.exports = {
     }
 }
 ```
+
+::: tip 
+运行时有可能出现如下错误
+```bash
+Error: Error with 'src\images\1.jpeg': '"C:\Users\86176\Desktop\webpack\webpack_code\node_modules\jpegtran-bin\vendor\jpegtran.exe"'
+Error with 'src\images\3.gif': spawn C:\Users\86176\Desktop\webpack\webpack_code\node_modules\optipng-bin\vendor\optipng.exe ENOENT
+```
+这是安装插件时没有成功把`.exe`下载来导致的
+
+可以去官方网站下载并手动移动到指定位置
+
+[jpegtran.exe](https://jpegclub.org/jpegtran/)
+
+放置到`node_modules/jpegtran-bin/vendor`中
+
+[optipng.exe](https://optipng.sourceforge.net/)
+
+放置到`node_modules/optipng-bin/vendor`中
+:::
 
 ### 使用squoosh进行压缩(已弃用)
 
@@ -257,4 +284,83 @@ module.exports = {
         ]
     }
 }
+```
+
+### 单独使用loader(不推荐)
+```javascript title="webpack.common.js"
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+
+module.exports = {
+  module: {
+    rules: [
+      // You need this, if you are using `import file from "file.ext"`, for `new URL(...)` syntax you don't need it
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        type: "asset",
+      },
+      // We recommend using only for the "production" mode
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        use: [
+          {
+            loader: ImageMinimizerPlugin.loader,
+            enforce: "pre",
+            options: {
+              minimizer: {
+                implementation: ImageMinimizerPlugin.imageminMinify,
+                options: {
+                  plugins: [
+                    "imagemin-gifsicle",
+                    "imagemin-mozjpeg",
+                    "imagemin-pngquant",
+                    "imagemin-svgo",
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
+### 单独使用plugin(不推荐)
+```javascript title="webpack.common.js"
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
+
+module.exports = {
+    module: {
+        rules: [
+          // You need this, if you are using `import file from "file.ext"`, for `new URL    (...)` syntax you don't need it
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                type: "asset",
+            },
+        ],
+    },
+    optimization: {
+        minimizer: [
+        // Extend default minimizer, i.e. `terser-webpack-plugin` for JS
+            "...",
+             // We recommend using only for the "production" mode
+            new ImageMinimizerPlugin({
+                minimizer: {
+                  implementation: ImageMinimizerPlugin.imageminMinify,
+                  options: {
+                        plugins: [
+                            "imagemin-gifsicle",
+                            "imagemin-mozjpeg",
+                            "imagemin-pngquant",
+                            "imagemin-svgo",
+                        ],
+                    },
+                },
+                // Disable `loader`
+                loader: false,
+            }),
+        ],
+    },
+};
 ```
