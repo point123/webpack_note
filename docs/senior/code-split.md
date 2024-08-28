@@ -49,4 +49,121 @@ module.exports = {
         使用`import`指定入口文件
         使用`filename`指定输出,如`pages/app.js`将输出到`dist/pages/app.js`
 
+
+
+### 提取重复代码
+
+#### runtimeChunk
+`runtimeChunk`控制`webpack`生成的运行时代码的处理方式
+
+运行时代码包括`webpack`用来管理加载模块,模块间交互的代码,如处理模块依赖关系、执行模块加载、动态加载模块、处理异步加载
+
+通常包括
+
+1. 模块加载逻辑: 管理模块加载顺序,确保依赖关系处理正确
+2. 模块缓存机制: 通过缓存机制,确保模块在首次加载后不会被重复加载
+3. 模块执行上下文: 维护模块的执行环境,确保模块在正确的上下文中执行
+
+`runtimeChunk`有几种不同的值
+
+* `false`: 默认值,运行时代码会内联到入口文件,运行时代码和业务逻辑代码打包在同一个文件中
+* `single`: 所有入口点共享一个运行时文件,这会生成一个单独的`runtime`文件,包含所有运行时代码
+* `multiple`: 每个入口点都有自己独立的运行时`chunk`
+
+对于多入口引用来说,配置为`single`是极为有用的
+
+1. 它可以将运行时代码单独分离为一个`chunk`,其他`chunk`内容发送变化时,运行时代码不一定会改变,浏览器可以更好的缓存不变的运行时代码
+2. 在多入口点的场景中,有可能每个入口文件依赖于同一个模块,如果运行时代码没有被正确管理,可能导致每个入口文件都有独立的运行时代码,这些代码会独立的加载和执行模块,模块可能会在每个入口点被实例化一次,意味着被加载和执行多次,导致多个独立的模块实例引发状态不同步问题
+
+### 入口依赖
+
+#### dependOn
+当多个入口文件使用了相同的依赖时,可以使用`dependOn`将依赖提取到单独的`bundle`中共享
+
+在以下实例中
+
+入口`index.js`依赖了`log.js`和`math.js`
+
+入口`app.js`依赖了`log.js`和`moduleB.js`
+
+模块`logs.js`依赖了`util.js`
+
+模块`util.js`依赖了`moduleA.js`
+
+模块`math.js`依赖了`util.js`,`moduleA.js`,`moduleB.js`
+![1724839244384](image/code-split/1724839244384.png)
+:::: code-group
+::: code-group-item index.js
+```javascript
+import { cube } from "./math.js"
+import { Pixel } from "./log.js"
+
+cube(3);
+Pixel();
+```
+:::
+::: code-group-item app.js
+```javascript
+import { Pixel } from "./js/log";
+import { moduleBfuncA } from "./js/moduleB";
+
+moduleBfuncA();
+console.log("这是新增的入口");
+Pixel();
+```
+::: 
+::: code-group-item log.js
+```javascript
+import { commonFunc } from "./util";
+
+console.log("这是一个副作用");
+export function Pixel() {
+    commonFunc();
+    return "Pixel";
+}
+
+```
+:::
+::: code-group-item math.js
+```javascript
+import { commonFunc } from "./util";
+import { moduleAFuncA } from "./moduleA";
+import { moduleBfuncA } from "./moduleB";
+
+export function cube(x) {
+    return x ** 3;
+}
+commonFunc();
+moduleAFuncA();
+moduleBfuncA();
+```
+:::
+::: code-group-item util.js
+```javascript
+import { moduleAFuncA } from "./moduleA";
+moduleAFuncA();
+export function commonFunc() {
+    console.log("通用公共代码");
+    
+}
+```
+:::
+::: code-group-item moduleA.js
+```javascript
+export function moduleAFuncA() {
+    return "模块A方法A";
+}
+```
+:::
+::: code-group-item moduleB.js
+```javascript
+export function moduleBfuncA() {
+    return "模块B方法A";
+}
+```
+:::
+::::
+
+#### splitChunks
+
 output中的filename是全局配置,entry中的filename可以理解为局部配置,可以覆盖全局配置;支持相同的占位符,output.filename默认值为`[name].js`
