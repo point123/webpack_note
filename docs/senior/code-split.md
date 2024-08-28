@@ -80,7 +80,7 @@ module.exports = {
 #### dependOn
 当多个入口文件使用了相同的依赖时,可以使用`dependOn`将依赖提取到单独的`bundle`中共享
 
-在以下实例中
+在以下示例中
 
 入口`index.js`依赖了`log.js`和`math.js`
 
@@ -163,7 +163,32 @@ export function moduleBfuncA() {
 ```
 :::
 ::::
+当没有配置`dependOn`时,每个`bundle`都会包含依赖的模块已经模块依赖的模块,存在重复
 
+如: `index.js`和`app.js`都会打包进`log.js`
+
+当配置`deppendOn`后
+```javascript title="webpack.config.js"
+module.exports = {
+    // ...
+    entry: {
+        index: {
+            path: "./src/index.js",
+            dependOn: "common"
+        },
+        main: {
+            path: "./src/app.js",
+            dependOn: "common"
+        },
+        common: "./src/log.js"
+    }
+}
+```
+可以发现`log.js`的内容被单独打包到`common.bundle.js`中,而`index.bundle.js`和`app.bundle.js`中则引用`common.bindle.js`中的`log.js`
+
+同时,`common.bundle.js`还包含了`util.js`和`moduleA.js`,其他模块也同样引用这些模块而不是在多个模块中重复生成
+
+`webpack`会递归解析模块依赖链,如果某个模块被提取到共享`bundle`,该模块的所有依赖也都会被提取到同一个共享的`bundle`中
 #### splitChunks
 
 output中的filename是全局配置,entry中的filename可以理解为局部配置,可以覆盖全局配置;支持相同的占位符,output.filename默认值为`[name].js`
