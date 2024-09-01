@@ -254,6 +254,20 @@ module.exports = {
 从`webpack5`开始,不在允许将`${cacheGroup}.test`或`${cacheGroup}.name`设置为`entry`名称
 :::
 
+chunks值为`all`,`initial`,`async`的区别
+* `async`
+    同步加载的模块不被配置的分割策略影响,默认情况下会被打包到主入口文件中
+
+    异步加载的模块会受到分割策略影响
+* `initial`
+
+    同步加载的模块会根据配置的分割策略进行分割,生成新的`chunk`
+
+    异步加载的模块依然被打包为`chunk`,但不参与配置中的分割策略,会根据`webpack`默认的异步加载逻辑被处理
+* `all`
+
+    同步加载和异步加载的模块都会收到配置中的分割策略影响,异步模块可能被分割为更小的`chunk`
+
 配置多入口时
 ```javascript title="webpack.config.js"
 module.exports = {
@@ -324,5 +338,76 @@ module.exports = {
 
 因为`dependOn`指定的`log.js`都直接或间接依赖了`log.js`,`moduleA.js`和`util.js`,所以被打包到了`common.bundle.js`,而`moduleB.js`仍在`math.js`和`app.js`中引入,所以被`splitChunks`拆分
 
+### 动态导入
+`ECMASCRIPT`的`import()`语法实现动态导入,它依赖于`promise`,所以在旧版本的浏览器中使用,还需要使用`polyfill`库,如[`promise-polyfill`](https://github.com/taylorhakes/promise-polyfill)或[`es6-promise`](https://github.com/stefanpenner/es6-promise)
+
+新增一个模块
+```javascript title="moduleC.js"
+export function dynamicFunction() {
+    return "动态加载";
+}
+```
+修改`index.html`,新增一个按钮`<button title="dynamic" id="dynamic"><button>`
+
+修改入口文件`app.js`
+```javascript{6-9} title="app.js"
+import { Pixel } from "./js/log";
+import { moduleBfuncA } from "./js/moduleB";
+moduleBfuncA();
+console.log("这是新增的入口");
+Pixel();
+const btn = document.querySelector("#dynamic");
+btn.addEventListener("click", () => {
+    import("./js/moduleC").then(res => res.dynamicFunction());
+});
+```
+再次打包后运行,可以发现打包结果中新增了一个`bundle`名为`src-js_moduleC_js.bundle.js`
+
+并且在浏览器中运行,可以看到初始加载时,网络并没有加载`src-js_moduleC_js.bundle.js`
+
+而是点击按钮后,才新增了一个请求,请求了`src-js_moduleC_js.bundle.js`
+
+如果这个模块同时被其他模块同步加载,如`log.js`同步加载了`moduleC.js`
+```javascript{2,7} title="log.js"
+import { commonFunc } from "./util";
+import { dynamicFunction } from "./moduleC";
+
+console.log("这是一个副作用");
+export function Pixel() {
+    commonFunc();
+    dynamicFunction();
+    return "Pixel";
+}
+
+```
+这种情况下,`moduleC.js`不会单独打包,而是和入口打包在一起
+
+因为`log.js`同步依赖`moduleC.js`,要求模块在加载时就能使用;由于这个模块以包含在同步`chunk`中,动态加载部分会直接复用已存在的模块
+
+如果一个模块仅仅被用于动态导入,那么它会被单独打包
+
+如果一个模块同时被同步和动态导入,那么它可能会和同步导入的模块打包在一起
+
+#### 修改动态导入打包后的名称
+```javascript{11} title="app.js"
+import { Pixel } from "./js/log";
+import { moduleBfuncA } from "./js/moduleB";
+
+moduleBfuncA();
+console.log("这是新增的入口");
+Pixel();
+
+const btn = document.querySelector("#dynamic");
+
+btn.addEventListener("click", () => {
+    import(/* webpackChunkName: "moduleC" */"./js/moduleC")
+    .then(res => res.dynamicFunction());
+});
+
+```
+`webpackChunkName: "moduleC"`是`webpack`动态导入模块命名的方式
+`moduleC`将来就会作为`[name]`的值显示,`output`中需要配置`filename`
+
+旧版本的`eslint`不支持`import()`语法,需要`eslint-plugin-import`插件解决,新版本已经支持
 
 output中的filename是全局配置,entry中的filename可以理解为局部配置,可以覆盖全局配置;支持相同的占位符,output.filename默认值为`[name].js`
