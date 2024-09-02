@@ -410,4 +410,75 @@ btn.addEventListener("click", () => {
 
 旧版本的`eslint`不支持`import()`语法,需要`eslint-plugin-import`插件解决,新版本已经支持
 
+### 输出命名
+
+#### css文件输出命名
+使用`mini-css-extract-plugin`插件时,可以传入配置项修改输出名称
+```javascript
+new MiniCssExtractPlugin({
+    // 每个css文件的名称
+    filename: "css/[name].css",
+    // 非入口的chunk文件名称
+    chunkFilename: "css/[name].chunk.css"
+})
+```
+#### html文件输出命名
+```javascript
+new HtmlWebpackPlugin({
+    filename: "html/[name].html",
+})
+```
+::: warning
+如果是多入口,那么会生成多个html
+:::
+#### js文件输出名称
+* 方式一
+```javascript{4,6}
+output: {
+    path: path.resolve(__dirname, "dist"),
+    // 输出的每个bundle名称
+    filename: "js/[name].bundle.js",
+    // 非初始chunk文件的名称
+    chunkFilename: "js/[name].chunk.js",
+    // 对于资源模块,可以使用这种模式输出,但是会全部放置到一起
+    assetModuleFilename: "assets/[name].[hash][ext]"
+}
+```
+* 方式二
+```javascript
+entry: {
+    index: {
+        import: "./src/index.js",
+        filename: "js/[name].bundle.js"
+    }
+}
+```
+##### entry中filename和output.filename区别
 output中的filename是全局配置,entry中的filename可以理解为局部配置,可以覆盖全局配置;支持相同的占位符,output.filename默认值为`[name].js`
+
+#### 资源模块输出名称
+* 方式一
+```javascript{4}
+output: {
+    filename: "js/[name].bundle.js",
+    // 对于资源模块,可以使用这种模式输出,但是会全部放置到一起
+    assetModuleFilename: "assets/[name].[hash][ext]"
+}
+```
+* 方式二
+```javascript{7}
+module: {
+    rules: [
+        {
+            test: "",
+            type: "asset", // asset/resource
+            generator: {
+                filename: "assets/[name].[hash][ext]"
+            }
+        }
+    ]
+}
+```
+::: tip
+方式二能够覆盖方式一的配置,方式一的配置会把所有类型的资源放在一起
+:::
