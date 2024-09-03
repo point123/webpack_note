@@ -76,3 +76,45 @@ btn.addEventListener("click", () => {
     import(/* webpackChunkName: "moduleCZ",webpackPrefetch: true */"./js/moduleC").then(res => res.dynamicFunction());
 });
 ```
+* 方式二
+使用插件`@vue/preload-webpack-plugin`
+
+rel
+as
+include
+fileBlacklist
+type: "asyncChunks"
+chunks: 
+entry: 
+
+rel: "prefetch",
+include: {
+    type: "asyncChunks",
+    entries: ["app"]
+}
+
+rel: "preload",
+as: "script" // 不使用as,则插件会根据文件后缀名使用不同的as值
+
+对as进行更精细的控制
+rel: "preload",
+as(entry) {
+    if (/\.css$/.test(entry)) return "style";
+    if (/\.woff$/.test(entry)) return "font";
+    if (/\.png$/.test(entry)) return "image";
+    return "script";
+}
+
+// 默认情况下,插件配置值相当于
+rel: "preload",
+include: "asyncChunks"
+
+include的值有initial,asyncChunks,all
+或者使用命名块
+include: ["home"]
+将只注入以下内容
+<link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
+
+过滤块
+
+
