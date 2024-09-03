@@ -56,9 +56,10 @@ export default [
                         text: "code-split",
                         link: "code-split"
                     },
-                    // {
-                    //     text: "Preload/Prefetch"
-                    // }
+                    {
+                        text: "Preload/Prefetch",
+                        link: "preload-prefetch"
+                    }
                 ]
             }
         ],

@@ -108,7 +108,7 @@ module.exports = [
     }
 ]
 ```
-#### 在Webpack中使用新版Eslint(扁平化)
+#### Webpack中使用新版Eslint(扁平化)
 
 1. 安装依赖
 ```bash
@@ -185,7 +185,7 @@ module.exports = {
 ```
 
 
-#### 在Webpack中使用旧版Eslint
+#### Webpack中使用旧版Eslint
 1. 安装依赖
 ```bash
 npm i -D eslint eslint-webpack-plugin
@@ -248,6 +248,88 @@ module.exports = {
 #### vscode中的eslint插件
 `vscode`扩展中安装`eslint`扩展,它能读取项目中的`eslint`配置文件,并且能实时的校验代码
 
+
+#### 扁平化配置补充(未验证)
+
+新版扁平化依赖中,数值中每个对象都是单独的配置
+如:
+```javascript title="eslint.config.js"
+const globals = require("globals");
+
+module.exports = [
+    {
+        rules: {
+            "semi": "error",
+            "prefer-const": "error"
+        },
+        files: ["src/**/*.js"],
+        languageOptions: {
+            sourceType: "module",
+            globals: {
+                ...globals.node,
+                ...globals.browser
+            }
+        }
+    },
+    {
+        rules: {
+            "semi": "error",
+            "prefer-const": "error"
+        },
+        files: ["dist/**/*.js"],
+        languageOptions: {
+            sourceType: "module",
+            globals: {
+                ...globals.node,
+                ...globals.browser
+            }
+        }
+    },
+]
+```
+第一个配置对象针对`src`目录下的`js`文件,第二个对象配置的是`dist`目录下的`js`文件
+
+默认情况下,配置的应用范围为`*/**.js`,`*/**.cjs`,`*/**.mjs`
+
+所以在如下配置中
+```javascript title="eslint.config.js"
+const js = require("@eslint/js");
+const globals = require("globals");
+
+module.exports = [
+    js.configs.recommended,
+    {
+        files: ["src/**/*.js"],
+        languageOptions: {
+            sourceType: "module",
+            globals: {
+                ...globals.node,
+                ...globals.browser
+            }
+        }
+    }
+]
+```
+第一个配置项为`js.configs.recommended`,它默认针对所有`js`,`cjs`,`mjs`文件,而第二项配置项并不会影响第一项配置项,所以如果想要指定`js.configs.recommended`的范围,可以修改配置
+```javascript title="eslint.config.js"
+const js = require("@eslint/js");
+const globals = require("globals");
+
+module.exports = [
+    {
+        ...js.configs.recommended,
+        files: ["src/**/*.js"],
+        languageOptions: {
+            sourceType: "module",
+            globals: {
+                ...globals.node,
+                ...globals.browser
+            }
+        }
+    }
+]
+```
+这样就只会针对`src`目录下的`js`文件进行校验了
 
 ### Babel
 

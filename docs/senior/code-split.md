@@ -1,4 +1,4 @@
-<h1>code solit</h1>
+<h1>code split</h1>
 
 打包代码时会将所有`js`打包到一个文件中,体积太大;
 
