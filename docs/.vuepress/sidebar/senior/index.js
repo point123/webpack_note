@@ -72,6 +72,14 @@ export default {
                         {
                             text: "preload/prefetch",
                             link: "preload-prefetch"
+                        },
+                        {
+                            text: "network cache",
+                            link: "network-cache"
+                        },
+                        {
+                            text: "core-js",
+                            link: "core-js"
                         }
                     ]
                 }

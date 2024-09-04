@@ -77,44 +77,90 @@ btn.addEventListener("click", () => {
 });
 ```
 * 方式二
-使用插件`@vue/preload-webpack-plugin`
+使用插件如`@vue/preload-webpack-plugin`
 
-rel
-as
-include
-fileBlacklist
-type: "asyncChunks"
-chunks: 
-entry: 
+`@vue/preload-webpack-plugin`是一个`html-webpack-plugin`的 ==扩展插件== 
 
-rel: "prefetch",
-include: {
-    type: "asyncChunks",
-    entries: ["app"]
+插件的使用如下
+```javascript{15-18} title="webpack.common.js"
+// ...
+const preloadWebpackPlugin = require("@vue/preload-webpack-plugin");
+module.exports = {
+    // ...
+    plugins: [
+        new htmlWebpaclPlugin({
+            title: "webpack-dev-server",
+            template: path.resolve(__dirname, "public/index.html"),
+            // filename: "html/[name].html"
+        }),
+        new MiniCssExtractPlugin({
+            filename: "css/[name].[contenthash:4].css",
+            chunkFilename: "css/[name].chunk.[contenthash:4].css"
+        }),
+        new preloadWebpackPlugin({
+            rel: "preload",
+            as: "script"
+        })
+    ],
+    // ...
 }
+```
 
-rel: "preload",
-as: "script" // 不使用as,则插件会根据文件后缀名使用不同的as值
+默认情况下,插件的行为为相当于
+```javascript
+new preloadWebpackPlugin({
+    rel: "preload",
+    include: "asyncChunks"
+})
+```
 
-对as进行更精细的控制
-rel: "preload",
-as(entry) {
-    if (/\.css$/.test(entry)) return "style";
-    if (/\.woff$/.test(entry)) return "font";
-    if (/\.png$/.test(entry)) return "image";
-    return "script";
-}
+也可以将`include`配置为`all`来预加载所有模块(vendor,async,normal chunks)
 
-// 默认情况下,插件配置值相当于
-rel: "preload",
-include: "asyncChunks"
+或设置为`initial`来仅加载初始块
 
-include的值有initial,asyncChunks,all
-或者使用命名块
-include: ["home"]
-将只注入以下内容
+`include`也可以使用命名块来明确指定哪些块使用预加载
+```javascript
+new preloadWebpackPlugin({
+    rel: "preload",
+    include: ["home"]
+})
+```
+
+这将只针对名称为`home`的块
+```html
 <link rel="preload" as="script" href="home.31132ae6680e598f8879.js">
+```
 
-过滤块
+配置项`include`可以为`{entrys?,chunks?,type?}`形式的对象
+如为指定的入口点预获取异步`chunks`
+```javascript
+{
+    rel: "prefetch",
+    include: {
+        type: "asyncChunks",
+        entries: ["app"]
+    }
+}
+```
 
+插件将根据不同的文件类型使用不同的`as`属性,如对于`.css`文件,将使用`as="style"`,对于`.woff2`的文件,将使用`as="font"`
 
+也可以指定`as`属性来明确指定
+
+还可以将`as`配置为一个函数来更精细的控制
+```javascript
+new preloadWebpackPlugin({
+    rel: "preload",
+    as(entry) {
+        if (/\.css$/.test(entry)) return 'style';
+        if (/\.woff$/.test(entry)) return 'font';
+        if (/\.png$/.test(entry)) return 'image';
+        return 'script';
+    }
+})
+```
+还可以使用`fileBlackList`来配置不想使用预加载的块,如`sourcemap`
+
+在添加预加载前,插件会检查文件是否与`fileBlackList`选项中的正则表达式不匹配
+
+`fileBlackList`默认为`[/\.map$/]`,即不会预加载任何源映射
