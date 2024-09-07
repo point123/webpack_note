@@ -80,6 +80,10 @@ export default {
                         {
                             text: "core-js",
                             link: "core-js"
+                        },
+                        {
+                            text: "PWA",
+                            link: "pwa"
                         }
                     ]
                 }

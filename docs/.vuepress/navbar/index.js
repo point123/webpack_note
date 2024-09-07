@@ -1,9 +1,11 @@
 import base from "./base";
 import senior from "./senior";
+import framework from "./framework";
 
 export default [
     ...base,
     ...senior,
+    ...framework,
     {
         text: "更多",
         children: [
