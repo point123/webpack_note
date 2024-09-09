@@ -9,7 +9,10 @@ export default {
                     text: "开发模式配置",
                     link: "dev"
                 },
-                
+                {
+                    text: "其他配置",
+                    link: "other"
+                }
             ]
         },
         {
