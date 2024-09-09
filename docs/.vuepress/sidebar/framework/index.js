@@ -10,8 +10,16 @@ export default {
                     link: "dev"
                 },
                 {
+                    text: "生产模式配置",
+                    link: "prod"
+                },
+                {
                     text: "其他配置",
                     link: "other"
+                },
+                {
+                    text: "项目代码",
+                    link: "code",
                 }
             ]
         },
