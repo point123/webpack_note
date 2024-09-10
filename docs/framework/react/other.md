@@ -38,7 +38,11 @@ module.exports = {
     // 来自babel-preset-react-app
     presets: ["react-app"],
     // 自动开启js和jsx的HMR,配合@pmmmwh/react-refresh-webpack-plugin使用
-    plugins: ["react-refresh/babel"]
+    // plugins: ["react-refresh/babel"]
+    // react-refresh/babel只能在开发模式下使用,否则会报错
+    plugins: [
+        process.env.NODE_ENV === "development" && "react-refresh/babel"
+    ].filter(Boolean)
 }
 ```
 

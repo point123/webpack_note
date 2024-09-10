@@ -20,6 +20,14 @@ export default {
                 {
                     text: "项目代码",
                     link: "code",
+                },
+                {
+                    text: "合并配置",
+                    link: "merge"
+                },
+                {
+                    text: "优化配置",
+                    link: "optimization"
                 }
             ]
         },
