@@ -71,7 +71,23 @@ module.exports = [
 
   许多规则的名称和位置也发生了改变
 
+  新版的`eslint`将不再支持`.eslintignore`进行忽略检查
 
+  如果需要全局忽略文件,需要在`eslint.config.js`中单独写一个配置对象,且该对象中仅包含一个属性`ignores`
+
+  例如
+  ```javascript{2-4} title="eslint.config.js"
+  module.exports = [
+    {
+        ignores: ["public", "config/**/*.js"]
+    },
+    js.config.recommended,
+    {
+        // ...其他规则
+    }
+  ]
+  ```
+  而配置中的`files`是指定`eslint`应该对哪些文件应用特定的规则或解析设置
 * 旧版:
 旧版通常导出为一个对象,使用`eslint:recommended`作为属性`extends`的值
 ##### rules规则
