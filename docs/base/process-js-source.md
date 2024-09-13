@@ -55,6 +55,14 @@ module.exports = [
     }
 ]
 ```
+其中,`js.config.recommended`的代码如下
+```javascript title="js.config.recommended.js"
+module.exports = Object.freeze({
+    rules: Object.freeze({
+        // ... 具体的规则
+    })
+})
+```
 #### 新旧版本配置文件区别
 * 新版:
   新版使用扁平风格配置,导出为一个数组;
@@ -67,7 +75,29 @@ module.exports = [
 
   ~~也就是说,数组中可以仅包含`js.config.recommended`或`js.config.all`即可直接使用~~
 
-  同时,使用新的推荐配置,废弃了`extends`选项, 想要覆盖推荐配置,在数组的第二个元素中使用一个对象,并在该对象中写入覆盖规则
+  同时,使用新的推荐配置,废弃了`extends`选项, 想要覆盖推荐配置的规则,在数组的第二个元素中使用一个对象,并在该对象中写入覆盖规则
+
+  当后一个对象的`files`属性覆盖前一个对象的`files`属性时,相同的规则会被覆盖
+
+  如果同一个配置对象中有两个`rules`属性,那么会采用后一个`rules`属性的规则
+  ```javascript title="eslint.config.js"
+  module.exports = [
+    {
+        files: ["src/**/*.js"],
+        rules: {
+            "no-unused-vars": "error",
+            "no-console": "error"
+        }
+    },
+    {
+        // 如果不配置files,或者能覆盖前一个files,那么no-unused-vars规则将覆盖前一个
+        files: ["src/css/*.js"], 
+        rules: {
+            "no-unused-vars": "off"
+        }
+    }
+  ]
+  ```
 
   许多规则的名称和位置也发生了改变
 
@@ -88,6 +118,30 @@ module.exports = [
   ]
   ```
   而配置中的`files`是指定`eslint`应该对哪些文件应用特定的规则或解析设置
+
+  如果一个配置对象不指定`files`属性,将默认为`"**/*.{js,mjs,cjs}"`
+
+  基本上,平面配置文件中所有配置都类似于`eslintrc`中的`overrides`属性
+
+  `globals`对象中可以配置在`linting`期间的自定义全局对象
+
+  通过如下配置,在`eslint`校验时,所有`js`文件都会有全局对象`process`,所有`src`中的`js`会有全局对象`process`和`dir`
+  ```javascript title="eslint.config.js"
+  module.exports = [
+    {
+        files: ["src/**/*.js"],
+        globals: {
+            "dir": true,
+        }
+    },
+    {
+        globals: {
+            "process": true
+        }
+    }
+  ]
+  ```
+
 * 旧版:
 旧版通常导出为一个对象,使用`eslint:recommended`作为属性`extends`的值
 ##### rules规则

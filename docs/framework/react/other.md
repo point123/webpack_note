@@ -67,6 +67,7 @@ module.exports = {
     "main": "index.js",
     "scripts": {
         "dev": "cross-env NODE_ENV=development webpack serve --config ./config/webpack.dev.js",
+        "build": "cross-env NODE_ENV=production webpack --config ./config/webpack.prod.js"
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
