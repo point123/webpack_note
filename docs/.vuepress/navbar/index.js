@@ -1,11 +1,13 @@
 import base from "./base";
 import senior from "./senior";
 import framework from "./framework";
+import schematic from "./schematic";
 
 export default [
     ...base,
     ...senior,
     ...framework,
+    ...schematic,
     {
         text: "更多",
         children: [

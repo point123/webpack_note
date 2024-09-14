@@ -61,6 +61,21 @@ export default {
                     link: "optimization"
                 }
             ]
+        },
+        {
+            text: "MPA",
+            collapsible: true,
+            prefix: "/framework/mpa",
+            children: [
+                {
+                    text: "业务代码",
+                    link: "main"
+                },
+                {
+                    text: "配置文件",
+                    link: "config"
+                }
+            ]
         }
     ],
 }

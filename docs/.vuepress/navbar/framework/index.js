@@ -10,6 +10,10 @@ export default [
             {
                 text: "vue",
                 link: "vue/dev"
+            },
+            {
+                text: "MPA",
+                link: "mpa/main",
             }
         ]
     }
