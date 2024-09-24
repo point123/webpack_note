@@ -43,6 +43,7 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data) {
         this.utils.contextify(this.context, path)
     ).join("!");
 
+    // import style from "!!../node_modules/css-loader/dist/cjs.js!.\style.css"
     const script = `
         import style from "!!${path}";
     
