@@ -6,6 +6,10 @@ export default [
             {
                 text: "loader",
                 link: "loader/order"
+            },
+            {
+                text: "plugin",
+                link: "plugin/function"
             }
         ]
     }

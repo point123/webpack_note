@@ -42,6 +42,21 @@ export default {
                     link: "style-loader"
                 }
             ]
+        },
+        {
+            text: "plugin",
+            prefix: "/schematic/plugin",
+            collapsible: true,
+            children: [
+                {
+                    text: "作用",
+                    link: "function"
+                },
+                {
+                    text: "webpack内部钩子",
+                    link: "hooks"
+                }
+            ]
         }
     ]
 }
