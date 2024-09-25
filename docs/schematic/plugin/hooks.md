@@ -56,3 +56,5 @@ exports.MultiHook = require("./MultiHook");
 * `tap`
 * `tapAsync`
 * `tapPromise`
+
+    通过源码可以知道,异步的Hooks构造器将call赋值为undefined,所以无法使用call
