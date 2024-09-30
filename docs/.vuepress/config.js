@@ -32,7 +32,9 @@ export default defineUserConfig({
         mdEnhancePlugin({
             sub: true,
             sup: true,
-            mark: true
+            mark: true,
+            include: true,
+            demo: true
         })
     ],
 });
