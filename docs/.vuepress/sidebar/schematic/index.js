@@ -55,6 +55,26 @@ export default {
                 {
                     text: "webpack内部钩子",
                     link: "hooks"
+                },
+                {
+                    text: "第一个插件",
+                    link: "first-plugin"
+                },
+                {
+                    text: "banner-webpack-plugin",
+                    link: "banner-webpack-plugin"
+                },
+                {
+                    text: "clean-webpack-plugin",
+                    link: "clean-webpack-plugin"
+                },
+                {
+                    text: "analyze-webpack-plugin",
+                    link: "analyze-webpack-plugin"
+                },
+                {
+                    text: "inline-chunk-wbepack-plugin",
+                    link: "inline-chunk-wbepack-plugin"
                 }
             ]
         }

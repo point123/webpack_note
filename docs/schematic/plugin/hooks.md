@@ -199,8 +199,126 @@ exports.MultiHook = require("./MultiHook");
 <summary>示例代码</summary>
 
 ```javascript
-<!-- @include ./tapable-hooks-example/asyncSeriesBailHook.js -->
+<!-- @include: ./tapable-hooks-example/asyncSeriesBailHook.js -->
 ```
+
 </details>
 
 ### AsyncSeriesWaterfallHook
+* 使用`tap`注册的函数,返回非`undefined`值,该值将覆盖所有后续函数的第一个参数,直到被新的值覆盖;
+* 使用`tapAsync`注册的函数,不使用`callback`,后续函数不会执行;`callAsync`的回调或`promise`的函数将不会执行
+* 使用`tapAsync`注册的函数,`callback`传递一个`truthy`值,后续函数不会执行;该值将传递给`callAsync`的回调或`promise.then`(相当于报错)
+* 使用`tapAsync`注册的函数,第一个参数为`falsy`值,第二个参数不是`undefined`,后续函数的第一个参数将被该非`undefined`值覆盖
+* 使用`tapPromise`注册的函数,如果不改变状态,后续函数不会执行,`callAsync`的回调或`promise`的函数将不会执行
+* 使用`tapPromise`注册的函数,如果`resolve`的参数不是`undefined`,该值将覆盖后续函数的第一个参数
+* 使用`tapPromise`注册的函数,如果`reject`,后续函数不会执行;`reject`的值将传递给`callAsync`的回调或`promise.catch`(相当于报错)`
+* 如果执行过程中没有报错,所有函数全部执行完成;若使用`callAsync`,回调函数将接收两个参数,参数一为`null`,参数二最终覆盖后续参数的值;若使用`promise`,则最终覆盖值将传递给`promise.then`
+<details>
+<summary>代码示例</summary>
+
+```javascript
+<!-- @include: ./tapable-hooks-example/asyncSeriesWaterfallHook.js -->
+```
+
+</details>
+
+### AsyncParallelHook
+* 函数同时执行,不会等待某个函数中的异步,因此每个函数都会执行
+* 先执行同步代码,异步任务会加入到任务队列中;因此已经添加到任务队列中的异步代码也会执行;
+  * 如果在异步代码中报错,则直接执行回调,由于后续异步代码已经添加到消息队列,仍会在回调后继续执行,只是无论是否报错不会再触发回调;
+  * 如果在同步代码中报错,则后续未添加到消息队列中的函数不会执行,当前同步函数执行完后立即报错,再执行当前注册的函数中的异步任务后运行完毕
+* `tap`注册的函数中返回值不会有任何影响
+* `tapAsync`注册的函数中,`callback`传递一个`truthy`值;若使用`callAsync`,则该值将传递给回调函数;若使用`promise`,该值将传递给`promise.catch`
+* `tapAsync`注册的函数中,`callback`传递一个`falsy`值;则不会有任何变化,一切正常执行
+* `tapPromise`注册的函数,`resolve`的值不会传递给`promise.then`
+* 如果不使用`callback`或改变`promise`状态,则`callAsync`的回调或`promise`后续函数不会执行
+
+<details>
+
+<summary>代码示例</summary>
+
+```javascript
+<!-- @include: ./tapable-hooks-example/asyncParallelHook.js  -->
+```
+
+</details>
+
+### AsyncParallelBailHook
+* `tap`函数中返回一个非`undefined`,直接执行回调或`promise.then`;后续函数不会执行;
+* `tapAsync`中传递一个`truthy`值,直接执行回调(相当于报错),然后继续执行消息队列中的任务
+* `tapAsync`中第一个参数为`falsy`值,第二个参数为`truthy`值,`callAsync`的回调或`promise.then`会执行,然后继续执行消息队列中的任务
+* `tapPromise`中`resolve`一个非`undefined`值,`callAsync`的回调或`promise.then`会执行,然后继续执行消息队列中的任务
+* `tapPromise`中`reject`一个`falsy`值,不会认为是错误,扔正常执行;`reject`一个`truthy`值,才会认为是错误
+* 正常不报错且使用了`callback`或改变了`promise`状态,`callAsync`参数一为`null`,参数二为传递的值;`promise.then`参数为传递的值;如果报错,那么错误参数将传递给`callAsync`的回调或`promise.catch`
+
+<details>
+<summary>代码示例</summary>
+
+```javascript
+<!-- @include: ./tapable-hooks-example/asyncParallelBailHook.js -->
+```
+
+</details>
+
+### AsyncSeriesLoopHook
+* 对于`tapAsync`注册的函数,如果`callback`传递一个`truthy`值,那么会报错,后续函数不会执行;如果第一个参数是一个`falsy`值,则会回到第一个函数重新开始执行
+* 对于`tapPromise`注册的函数,如果`resolve`值为非`undefined`,会回到第一个函数重新开始执行;如果`reject`,相当于报错
+<details>
+<summary>代码示例</summary>
+
+```javascript
+<!-- @include: ./tapable-hooks-example/asyncSeriesLoopHook.js -->
+```
+
+</details>
+
+个人理解: `webpack`的一系列生命周期执行时会调用这些钩子,执行绑定的函数
+
+## Plugin构建对象
+
+### Compiler
+
+`Compiler`中保存着完整的`webpack`环境配置,每次启动`webpack`构建时它都是一个独一无二仅仅创建一次的对象
+
+可以通过`compiler`对象访问到`webpack`环境配置,如`loader`,`plugin`等信息
+
+它包含如下属性
+
+* `compiler.option`
+    
+    可以访问本次启动`webpack`时所有的配置项
+
+* `compiler.inputFileSystem`和`compiler.outputSystem`
+
+    可以进行文件操作,类似`node`中的`fs`
+
+* `compiler.hooks`
+
+    可以注册`tapable`的不同类型`hook`,从而在`compiler`生命周期植入不同逻辑
+
+### Compilation
+
+`compilation`对象能够访问所有模块和它们的依赖(大部分为循环依赖)
+
+它会对依赖图中所有模块进行字面上的编译。在编译阶段,模块会被加载(load),封存(seal),优化(optimize),分块(chunk),哈希(hash),重新创建(restore)
+
+它主要有以下属性
+* `compilation.modules`
+
+    可以访问所有模块,打包的每个文件都是一个模块
+
+* `compilation.chunks`
+
+    `chunk`即是多个`modules`组成而来的一个代码块。入口文件引入的资源组成一个`chunk`,通过代码分割的模块又是另外的`chunk`
+
+* `compilation.assets`
+
+    可以访问本次打包生成的所有文件的结果
+
+* `compilation.hooks`
+
+    可以注册`tapable`的不同种类`hook`,用于在`compilation`编译模块阶段进行逻辑添加以及修改
+
+### 生命周期简图
+
+![1728137014344](image/1728137014344.png)
